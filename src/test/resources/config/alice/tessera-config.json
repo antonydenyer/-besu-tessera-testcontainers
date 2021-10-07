@@ -1,0 +1,56 @@
+{
+  "mode": "orion",
+  "jdbc": {
+    "username": "sa",
+    "password": "",
+    "url": "jdbc:h2:./data/tm/db;MODE=Oracle;TRACE_LEVEL_SYSTEM_OUT=0",
+    "autoCreateTables": true
+  },
+  "serverConfigs": [
+    {
+      "app": "P2P",
+      "enabled": true,
+      "serverAddress": "http://alice-tessera:9000",
+      "sslConfig": {
+        "tls": "OFF"
+      },
+      "communicationType": "REST"
+    },
+    {
+      "app": "Q2T",
+      "enabled": true,
+      "serverAddress": "http://alice-tessera:9101",
+      "sslConfig": {
+        "tls": "OFF"
+      },
+      "communicationType": "REST"
+    },
+    {
+      "app": "ThirdParty",
+      "enabled": true,
+      "serverAddress": "http://alice-tessera:9080",
+      "communicationType": "REST"
+    }
+  ],
+  "peer": [
+    {
+      "url": "http://alice-tessera:9000"
+    },
+    {
+      "url": "http://bob-tessera:9000"
+    }
+  ],
+  "keys": {
+    "keyData": [
+      {
+        "config": {
+          "data": {
+            "bytes": "Wl+xSyXVuuqzpvznOS7dOobhcn4C5auxkFRi7yLtgtA="
+          },
+          "type": "unlocked"
+        },
+        "publicKey": "BULeR8JyUWhiuuCMU/HLA0Q5pzkYT+cHII3ZKBey3Bo="
+      }
+    ]
+  }
+}

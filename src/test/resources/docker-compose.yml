@@ -1,0 +1,91 @@
+---
+version: '3.6'
+
+services:
+  miner:
+    image: hyperledger/besu:${BESU_VERSION:-latest}
+    ports:
+      - "8545"
+    entrypoint: besu --config-file=config.toml
+    networks:
+      besu-tessera:
+        ipv4_address: 172.20.237.10
+    volumes:
+      - ./config/static-nodes.json:/opt/besu/static-nodes.json
+      - ./config/miner/config.toml:/opt/besu/config.toml
+      - ./config/miner/key:/opt/besu/keys/key
+
+  alice:
+    image: hyperledger/besu:${BESU_VERSION:-latest}
+    entrypoint: besu --config-file=config.toml
+    ports:
+      - "8545"
+    networks:
+      besu-tessera:
+    volumes:
+      - ./config/static-nodes.json:/opt/besu/static-nodes.json
+      - ./config/alice/config.toml:/opt/besu/config.toml
+      - ./config/alice/tessera.pub:/opt/besu/tessera.pub
+      - ./config/alice/key:/opt/besu/keys/key
+    depends_on:
+      - alice-tessera
+      - miner
+
+  alice-tessera:
+    image: quorumengineering/tessera:${TESSERA_VERSION:-21.7.0}
+    entrypoint: /tessera/bin/tessera -configfile /tessera/bin/tessera-config.json
+    ports:
+      - "9000"
+      - "9080"
+      - "9101"
+    networks:
+      besu-tessera:
+    volumes:
+      - ./config/alice/tessera-config.json:/tessera/bin/tessera-config.json
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "--proxy", "off", "http://localhost:9000/upcheck" ]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+
+  bob:
+    image: hyperledger/besu:${BESU_VERSION:-latest}
+    entrypoint: besu --config-file=config.toml
+    ports:
+      - "8545"
+    networks:
+      besu-tessera:
+    volumes:
+      - ./config/static-nodes.json:/opt/besu/static-nodes.json
+      - ./config/bob/config.toml:/opt/besu/config.toml
+      - ./config/bob/tessera.pub:/opt/besu/tessera.pub
+      - ./config/bob/key:/opt/besu/keys/key
+    depends_on:
+      - bob-tessera
+      - miner
+
+  bob-tessera:
+    image: quorumengineering/tessera:${TESSERA_VERSION:-21.7.0}
+    entrypoint: /tessera/bin/tessera -configfile /tessera/bin/tessera-config.json
+    ports:
+      - "9000"
+      - "9080"
+      - "9101"
+    networks:
+      besu-tessera:
+    volumes:
+      - ./config/bob/tessera-config.json:/tessera/bin/tessera-config.json
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "--proxy", "off", "http://localhost:9000/upcheck" ]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+
+networks:
+  besu-tessera:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.237.0/24
