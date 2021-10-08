@@ -22,7 +22,8 @@ solidity {
 }
 
 ext {
-    besuVersion = "21.7.3"
+//    besuVersion = "21.1.6"
+    besuVersion = "latest"
     tesseraVersion = "21.7.0"
 }
 
@@ -53,10 +54,6 @@ test {
 }
 
 dependencies {
-    implementation "org.hyperledger.besu:plugin-api:$besuVersion"
-    implementation("org.hyperledger.besu.internal:p2p:$besuVersion") {
-        exclude group: "tech.pegasys.discovery"
-    }
     implementation "com.google.auto.service:auto-service:1.+"
 
     implementation "org.apache.logging.log4j:log4j-api:2.14.0"

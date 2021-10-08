@@ -18,8 +18,11 @@ services:
   alice:
     image: hyperledger/besu:${BESU_VERSION:-latest}
     entrypoint: besu --config-file=config.toml
+    environment:
+      JAVA_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,address=*:8000,suspend=n"
     ports:
-      - "8545"
+      - "8000:8000"
+      - "8545:8545"
     networks:
       besu-tessera:
     volumes:
